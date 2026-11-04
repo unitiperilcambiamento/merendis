@@ -22,7 +22,7 @@ export default function OreoPuzzle({ onUnlock }) {
           spread: 70,
           origin: { y: 0.6 }
         });
-      } catch (e) {
+      } catch {
         // Confetti fallback
       }
       setTimeout(() => {
