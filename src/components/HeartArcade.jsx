@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { RotateCcw, Heart, Zap, Sparkle, Award } from 'lucide-react';
+import { RotateCcw, Heart, Zap } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 // Target Easter Egg scores as requested:
