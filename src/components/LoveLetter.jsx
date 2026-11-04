@@ -1,46 +1,31 @@
-import React, { useState } from 'react';
-import { Heart, Sparkles, Send, ArrowRight, BookOpen, Smile, Star } from 'lucide-react';
-import confetti from 'canvas-confetti';
+import React from 'react';
+import { ArrowRight } from 'lucide-react';
 
 /**
  * LoveLetter:
- * Displays the exact letter requested by the user, formatted with an elegant envelope/paper feel,
- * sweet decorative hearts, and a button to continue inside the main application.
+ * Displays the exact letter requested by the user, presented in a clean, refined,
+ * and intimate editorial letter format without excessive emojis or symbols.
  */
 export default function LoveLetter({ onContinueToApp }) {
-  const [hasTriggeredConfetti, setHasTriggeredConfetti] = useState(false);
-
-  const handleConfetti = () => {
-    confetti({
-      particleCount: 80,
-      spread: 70,
-      origin: { y: 0.5 },
-      colors: ['#f43f5e', '#fda4af', '#fcd34d', '#fb7185']
-    });
-    setHasTriggeredConfetti(true);
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-100 via-pink-50 to-amber-100 flex items-center justify-center p-4 sm:p-6 text-slate-800">
-      <div className="max-w-2xl w-full bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border-2 border-rose-200 overflow-hidden relative">
+    <div className="min-h-screen bg-gradient-to-br from-stone-100 via-rose-50/30 to-stone-200 flex items-center justify-center p-4 sm:p-6 text-slate-800">
+      <div className="max-w-2xl w-full bg-white rounded-2xl shadow-xl border border-stone-200 overflow-hidden relative">
 
-        {/* Top Header Stamp */}
-        <div className="bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 p-6 text-white text-center relative overflow-hidden">
-          <div className="absolute -right-6 -bottom-6 opacity-20 text-8xl">💌</div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-xs font-semibold uppercase tracking-wider mb-2">
-            <Heart className="w-3.5 h-3.5 fill-white" />
-            <span>Messaggio dal Cuore</span>
-          </div>
-          <h1 className="text-3xl font-extrabold tracking-tight">Per la mia Ele speciale 💖</h1>
-          <p className="text-rose-100 text-sm mt-1">Hai risolto il puzzle dell'Oreo! Questo è per te:</p>
+        {/* Top Header */}
+        <div className="bg-gradient-to-r from-rose-900 via-rose-800 to-stone-900 p-6 sm:p-8 text-white text-center relative">
+          <span className="text-xs uppercase tracking-widest text-rose-200 font-semibold">
+            Messaggio per Ele
+          </span>
+          <h1 className="text-2xl sm:text-3xl font-serif mt-1 font-normal tracking-wide">
+            Per Ele
+          </h1>
         </div>
 
         {/* Letter Content / Parchment */}
-        <div className="p-6 sm:p-8 space-y-6 bg-[#fffdfa] relative">
-          {/* Subtle paper lines background */}
-          <div className="relative border-l-4 border-rose-400 pl-4 sm:pl-6 space-y-4 text-base sm:text-lg leading-relaxed text-slate-700 font-serif italic">
+        <div className="p-6 sm:p-10 space-y-5 bg-[#faf8f5] text-slate-800 font-serif leading-relaxed text-base sm:text-lg">
+          <div className="border-l-2 border-rose-300 pl-5 sm:pl-7 space-y-4">
 
-            <p className="font-sans font-bold text-xl sm:text-2xl text-rose-600 not-italic">
+            <p className="font-sans font-bold text-xl text-rose-900 tracking-tight not-italic">
               ciaooo ele!!
             </p>
 
@@ -56,7 +41,7 @@ export default function LoveLetter({ onContinueToApp }) {
               potresti pensare che magari non ci tenevo cosi tanto, oppure che mi sono sfogato veramente ma adesso sto negando tutto, in realtà purtroppo non è nessuna delle due, ma sono solo stato ingenuo io, davvero davvero.
             </p>
 
-            <p className="font-semibold text-rose-700">
+            <p className="font-semibold text-rose-950">
               io ti amo davvero e ti ringrazio per tutti i giorni che hai deciso di passare con me e che passeremo insieme!! sei davvero la persona che adoro di piu e che adorerò per sempre!!
             </p>
 
@@ -65,37 +50,24 @@ export default function LoveLetter({ onContinueToApp }) {
             </p>
           </div>
 
-          {/* Sweet Seal & Sign */}
-          <div className="pt-4 border-t border-rose-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 text-rose-600">
-              <Sparkles className="w-5 h-5 animate-spin" style={{ animationDuration: '6s' }} />
-              <span className="text-sm font-medium font-sans">Sempre nel mio cuore &bull; Con tutto l'affetto del mondo</span>
-            </div>
-
-            <button
-              onClick={handleConfetti}
-              type="button"
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-50 text-rose-600 border border-rose-200 text-xs font-semibold hover:bg-rose-100 transition"
-            >
-              <Heart className="w-3.5 h-3.5 fill-rose-500" />
-              <span>Invia un abbraccio virtuale</span>
-            </button>
+          <div className="pt-6 border-t border-stone-200 text-sm font-sans text-stone-500">
+            Con affetto sincero e profondo rispetto.
           </div>
         </div>
 
         {/* Action Button to Enter App */}
-        <div className="p-4 sm:p-6 bg-rose-50/70 border-t border-rose-200/80 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <span className="text-xs text-slate-500 text-center sm:text-left">
-            Ho preparato per te anche diverse sezioni speciali e una sala giochi dei cuori!
+        <div className="p-4 sm:p-6 bg-white border-t border-stone-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <span className="text-xs text-stone-500 font-sans text-center sm:text-left">
+            Prosegui per accedere a tutte le sezioni dell'applicazione.
           </span>
 
           <button
             id="enter-app-btn"
             onClick={onContinueToApp}
             type="button"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 text-white font-bold text-sm shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-95 transition-all"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-stone-900 text-white font-medium text-sm hover:bg-stone-800 transition-all font-sans"
           >
-            <span>Entra nel Mondo di Ele</span>
+            <span>Entra nell'Applicazione</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>

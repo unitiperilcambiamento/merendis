@@ -1,143 +1,159 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Sparkles, Trophy, RotateCcw, Heart, Flame, Zap, Award } from 'lucide-react';
+import { RotateCcw, Heart, Zap, Sparkle, Award } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
-// Distinct heart types with different colors, point values and descriptions
-const HEART_TYPES = [
-  { id: 'classic', icon: '💖', name: 'Cuore Rosa Scintillante', points: 10, bg: 'bg-rose-100', color: 'text-rose-600' },
-  { id: 'gold', icon: '💛', name: 'Cuore d\'Oro Prezioso', points: 25, bg: 'bg-amber-100', color: 'text-amber-600' },
-  { id: 'fire', icon: '❤️‍🔥', name: 'Cuore di Fuoco & Passione', points: 50, bg: 'bg-orange-100', color: 'text-orange-600' },
-  { id: 'purple', icon: '💜', name: 'Cuore Viola Dolcezza', points: 15, bg: 'bg-purple-100', color: 'text-purple-600' },
-  { id: 'rainbow', icon: '🌈', name: 'Cuore Arcobaleno Magico', points: 100, bg: 'bg-teal-100', color: 'text-teal-600' },
-  { id: 'cookie', icon: '🍪', name: 'Cuore Oreo Speciale', points: 75, bg: 'bg-stone-200', color: 'text-stone-800' },
-];
+// Target Easter Egg scores as requested:
+// 2009, 2212 (with "ti amo"), 1209, 1812, 2610
+const EASTER_EGG_SCORES = {
+  1209: { title: 'Traguardo 1209', desc: 'Una data incisa nella memoria. Un ricordo indelebile.' },
+  1812: { title: 'Traguardo 1812', desc: 'Un momento prezioso che custodisco con profondo affetto.' },
+  2009: { title: 'Traguardo 2009', desc: 'Il tempo trascorso insieme è una certezza che non muta.' },
+  2212: { title: 'Traguardo 2212', desc: 'ti amo', isMainLoveSecret: true },
+  2610: { title: 'Traguardo 2610', desc: 'Sempre al tuo fianco, con rispetto e verità.' },
+};
 
 export default function HeartArcade({ onSecretTriggered }) {
   const [selectedGame, setSelectedGame] = useState('catcher'); // 'catcher' | 'popper' | 'memory' | 'clicker'
   const [score, setScore] = useState(0);
-  const [secretShown, setSecretShown] = useState(false);
-  const [lastHeartCollected, setLastHeartCollected] = useState(null);
+  const [unlockedEggs, setUnlockedEggs] = useState([]);
+  const [activeEggModal, setActiveEggModal] = useState(null);
 
-  // Check 2212 secret trigger
+  const checkEasterEggs = (newScore) => {
+    // If exactly or crosses 2212
+    if (newScore >= 2212 && !unlockedEggs.includes(2212)) {
+      setUnlockedEggs((prev) => [...prev, 2212]);
+      onSecretTriggered();
+      return;
+    }
+
+    // Check specific egg scores
+    Object.keys(EASTER_EGG_SCORES).forEach((scoreKey) => {
+      const target = Number(scoreKey);
+      if (newScore === target && !unlockedEggs.includes(target)) {
+        setUnlockedEggs((prev) => [...prev, target]);
+        setActiveEggModal(EASTER_EGG_SCORES[target]);
+        confetti({ particleCount: 70, spread: 60 });
+      }
+    });
+  };
+
   const addPoints = (points) => {
     setScore((prev) => {
       const nextScore = prev + points;
-      if (nextScore >= 2212 && !secretShown) {
-        setSecretShown(true);
-        triggerSecretModal();
-      }
+      checkEasterEggs(nextScore);
       return nextScore;
     });
   };
 
-  const triggerSecretModal = () => {
-    confetti({
-      particleCount: 150,
-      spread: 100,
-      origin: { y: 0.4 },
-      colors: ['#e11d48', '#fb7185', '#f43f5e', '#ffe4e6']
-    });
-    onSecretTriggered();
-  };
-
   const setScoreDirectly = (val) => {
     setScore(val);
-    if (val >= 2212 && !secretShown) {
-      setSecretShown(true);
-      triggerSecretModal();
+    if (val === 2212 || val >= 2212) {
+      if (!unlockedEggs.includes(2212)) {
+        setUnlockedEggs((prev) => [...prev, 2212]);
+      }
+      onSecretTriggered();
+    } else if (EASTER_EGG_SCORES[val]) {
+      setActiveEggModal(EASTER_EGG_SCORES[val]);
+      if (!unlockedEggs.includes(val)) {
+        setUnlockedEggs((prev) => [...prev, val]);
+      }
     }
   };
 
   return (
     <div className="space-y-6 py-4">
       {/* Top Banner */}
-      <div className="bg-gradient-to-r from-pink-500 via-rose-500 to-red-500 rounded-3xl p-6 sm:p-8 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="bg-stone-900 rounded-2xl p-6 sm:p-8 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 border border-stone-800">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 text-xs font-bold mb-2 uppercase tracking-wider backdrop-blur-sm">
-            <Sparkles className="w-3.5 h-3.5 fill-white" />
-            <span>Heart Arcade per Ele</span>
-          </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-            I Giochini dei Cuoricini Diversi 💕
+          <span className="text-xs font-semibold uppercase tracking-widest text-stone-400">
+            Spazio Interattivo
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight mt-1 mb-2 text-stone-100">
+            Sala Giochi
           </h2>
-          <p className="text-rose-100 text-xs sm:text-sm mt-1 max-w-lg">
-            Divertiti con i vari tipi di cuori! C'è un dolce segreto nascosto: raggiungi esattamente o supera i <strong>2212 punti</strong> in qualunque gioco per scoprirlo!
+          <p className="text-stone-300 text-xs sm:text-sm max-w-lg leading-relaxed">
+            Quattro giochi di concentrazione e precisione. Raggiungendo determinati punteggi chiave (come 1209, 1812, 2009, 2212, 2610) si sbloccheranno easter egg riservati. In particolare a <strong>2212 punti</strong> è custodito il messaggio principale.
           </p>
         </div>
 
-        {/* Global Score Display & Quick Cheat / Reset */}
-        <div className="flex flex-col items-center bg-white/10 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/20 min-w-[200px]">
-          <span className="text-xs font-semibold uppercase tracking-wider text-rose-100">Punti Cuore</span>
-          <span id="arcade-score-value" className="text-3xl sm:text-4xl font-black tracking-tight text-white animate-pulse">
+        {/* Global Score Display */}
+        <div className="flex flex-col items-center bg-stone-800/80 px-6 py-4 rounded-xl border border-stone-700 min-w-[210px]">
+          <span className="text-xs font-medium uppercase tracking-wider text-stone-400">Punteggio Totale</span>
+          <span id="arcade-score-value" className="text-3xl sm:text-4xl font-serif font-bold tracking-tight text-white my-1">
             {score}
           </span>
           <div className="flex items-center gap-2 mt-2">
             <button
-              onClick={() => { setScore(0); setSecretShown(false); }}
-              className="text-[11px] underline opacity-80 hover:opacity-100 transition"
-              title="Resetta punteggio"
+              onClick={() => { setScore(0); setUnlockedEggs([]); }}
+              className="text-[11px] text-stone-400 hover:text-stone-200 underline transition"
             >
               Azzera
             </button>
-            <span className="opacity-50">&bull;</span>
+            <span className="text-stone-600">&bull;</span>
             <button
               id="cheat-2212-btn"
               onClick={() => setScoreDirectly(2212)}
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-400 text-amber-950 text-[11px] font-bold shadow hover:bg-amber-300 transition"
-              title="Raggiungi istantaneamente 2212 punti per vedere il segreto"
+              className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-stone-100 text-stone-900 text-xs font-medium hover:bg-white transition"
+              title="Raggiungi quota 2212"
             >
-              <Zap className="w-3 h-3 fill-current" />
-              <span>Segreto 2212!</span>
+              <Zap className="w-3 h-3 text-stone-700" />
+              <span>Quota 2212</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Heart Types Legend */}
-      <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 border border-rose-100 shadow-sm">
-        <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1">
-          <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />
-          <span>I Cuoricini da Collezionare:</span>
+      {/* Secret Targets Bar */}
+      <div className="bg-white rounded-xl p-4 border border-stone-200 shadow-xs flex flex-wrap items-center justify-between gap-3">
+        <div className="text-xs font-medium text-stone-600">
+          Traguardi segreti:
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-          {HEART_TYPES.map((ht) => (
-            <div key={ht.id} className={`p-2 rounded-xl ${ht.bg} flex items-center gap-2 border border-black/5`}>
-              <span className="text-2xl">{ht.icon}</span>
-              <div className="min-w-0">
-                <p className="text-[11px] font-bold text-slate-800 truncate">{ht.name}</p>
-                <p className="text-[10px] font-semibold text-rose-600">+{ht.points} pt</p>
-              </div>
-            </div>
-          ))}
+        <div className="flex flex-wrap gap-2">
+          {[1209, 1812, 2009, 2212, 2610].map((target) => {
+            const isUnlocked = score >= target || unlockedEggs.includes(target);
+            return (
+              <button
+                key={target}
+                onClick={() => setScoreDirectly(target)}
+                className={`px-2.5 py-1 rounded-lg text-xs font-medium transition flex items-center gap-1 ${
+                  isUnlocked
+                    ? 'bg-rose-50 text-rose-800 border border-rose-300'
+                    : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                }`}
+              >
+                {isUnlocked && <Heart className="w-3 h-3 fill-rose-600 text-rose-600" />}
+                <span>{target}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {/* Game Selector Tabs */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1">
         {[
-          { id: 'catcher', label: '1. Acchiappa i Cuori Cadenti', icon: '🧺' },
-          { id: 'popper', label: '2. Scoppia i Cuoricini Magici', icon: '🫧' },
-          { id: 'memory', label: '3. Memory delle Coppie d\'Amore', icon: '🃏' },
-          { id: 'clicker', label: '4. Generatore di Cuori Turbo', icon: '💖' },
+          { id: 'catcher', label: '1. Riflessi e Coordinate' },
+          { id: 'popper', label: '2. Sfere in Sospensione' },
+          { id: 'memory', label: '3. Memoria Visiva' },
+          { id: 'clicker', label: '4. Ritmo e Precisione' },
         ].map((tab) => (
           <button
             key={tab.id}
             id={`game-tab-${tab.id}`}
             onClick={() => setSelectedGame(tab.id)}
-            className={`px-4 py-2.5 rounded-2xl font-bold text-xs sm:text-sm whitespace-nowrap flex items-center gap-2 transition ${
+            className={`px-4 py-2 rounded-xl font-medium text-xs sm:text-sm whitespace-nowrap transition ${
               selectedGame === tab.id
-                ? 'bg-rose-500 text-white shadow-md'
-                : 'bg-white/80 text-slate-700 hover:bg-rose-50 border border-rose-100'
+                ? 'bg-stone-900 text-white shadow-xs'
+                : 'bg-white text-stone-600 hover:bg-stone-100 border border-stone-200'
             }`}
           >
-            <span>{tab.icon}</span>
-            <span>{tab.label}</span>
+            {tab.label}
           </button>
         ))}
       </div>
 
       {/* Active Game Container */}
-      <div className="bg-white/95 backdrop-blur-md rounded-3xl p-6 sm:p-8 border border-rose-200 shadow-xl min-h-[440px] flex flex-col justify-center">
+      <div className="bg-white rounded-2xl p-6 sm:p-8 border border-stone-200 shadow-sm min-h-[420px] flex flex-col justify-center">
         {selectedGame === 'catcher' && (
           <CatcherGame onAddPoints={addPoints} />
         )}
@@ -152,76 +168,64 @@ export default function HeartArcade({ onSecretTriggered }) {
         )}
       </div>
 
-      {/* Secret 2212 Points Milestone Alert / Indicator */}
-      <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-50 to-rose-50 border border-amber-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-amber-400 text-white flex items-center justify-center font-black text-sm shadow">
-            2212
-          </div>
-          <div>
-            <h4 className="text-sm font-bold text-amber-950">Traguardo Segreto: 2212 Punti</h4>
-            <p className="text-xs text-amber-800">
-              {score >= 2212
-                ? '✨ Segreto sbloccato! Il messaggio speciale "ti amo" è stato rivelato!'
-                : `Mancano ancora ${2212 - score} punti per scoprire il messaggio nascosto.`}
-            </p>
+      {/* Modal for other easter egg scores */}
+      {activeEggModal && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full text-center border border-stone-200 shadow-xl">
+            <div className="w-12 h-12 mx-auto rounded-full bg-rose-50 flex items-center justify-center text-rose-600 border border-rose-200 mb-3">
+              <Heart className="w-6 h-6 fill-rose-600" />
+            </div>
+            <h4 className="font-serif font-bold text-stone-900 text-lg mb-1">{activeEggModal.title}</h4>
+            <p className="text-stone-600 text-sm mb-4 leading-relaxed">{activeEggModal.desc}</p>
+            <button
+              onClick={() => setActiveEggModal(null)}
+              className="px-5 py-2 rounded-lg bg-stone-900 text-white text-xs font-medium hover:bg-stone-800 transition"
+            >
+              Chiudi
+            </button>
           </div>
         </div>
-
-        {score >= 2212 && (
-          <button
-            onClick={triggerSecretModal}
-            className="px-4 py-2 rounded-xl bg-rose-500 text-white text-xs font-bold hover:bg-rose-600 shadow transition animate-bounce"
-          >
-            💖 Mostra di Nuovo il "Ti Amo"
-          </button>
-        )}
-      </div>
+      )}
     </div>
   );
 }
 
-// ---------------- GAME 1: Cuori Cadenti (Catcher) ----------------
+// ---------------- GAME 1: Riflessi e Coordinate ----------------
 function CatcherGame({ onAddPoints }) {
-  const [basketX, setBasketX] = useState(50); // percentage 0 - 100
-  const [fallingHearts, setFallingHearts] = useState([]);
+  const [paddleX, setPaddleX] = useState(50);
+  const [items, setItems] = useState([]);
   const [isActive, setIsActive] = useState(false);
   const containerRef = useRef(null);
 
   const startGame = () => {
     setIsActive(true);
-    setFallingHearts([]);
+    setItems([]);
   };
 
   useEffect(() => {
     if (!isActive) return;
 
-    // Spawn falling hearts periodically
     const spawnTimer = setInterval(() => {
-      const randomHeart = HEART_TYPES[Math.floor(Math.random() * HEART_TYPES.length)];
-      setFallingHearts((prev) => [
+      setItems((prev) => [
         ...prev,
         {
           id: Math.random().toString(),
-          heart: randomHeart,
-          x: Math.floor(Math.random() * 85) + 5, // 5% to 90%
+          points: 15,
+          x: Math.floor(Math.random() * 85) + 5,
           y: 0,
         }
       ]);
-    }, 700);
+    }, 650);
 
-    // Gravity / falling tick
     const tickTimer = setInterval(() => {
-      setFallingHearts((prev) => {
+      setItems((prev) => {
         const next = [];
         for (const item of prev) {
-          const newY = item.y + 4;
-          // Check collision with basket (basket is around y: 85 - 95%)
+          const newY = item.y + 4.5;
           if (newY >= 82 && newY <= 94) {
-            const diffX = Math.abs(item.x - basketX);
+            const diffX = Math.abs(item.x - paddleX);
             if (diffX < 15) {
-              // Caught!
-              onAddPoints(item.heart.points);
+              onAddPoints(item.points);
               continue;
             }
           }
@@ -237,7 +241,7 @@ function CatcherGame({ onAddPoints }) {
       clearInterval(spawnTimer);
       clearInterval(tickTimer);
     };
-  }, [isActive, basketX, onAddPoints]);
+  }, [isActive, paddleX, onAddPoints]);
 
   const handleMouseMove = (e) => {
     if (!containerRef.current) return;
@@ -245,15 +249,15 @@ function CatcherGame({ onAddPoints }) {
     const clientX = e.clientX || (e.touches && e.touches[0].clientX);
     if (!clientX) return;
     const relX = ((clientX - rect.left) / rect.width) * 100;
-    setBasketX(Math.max(5, Math.min(95, relX)));
+    setPaddleX(Math.max(5, Math.min(95, relX)));
   };
 
   return (
     <div className="flex flex-col items-center">
       <div className="text-center mb-4">
-        <h3 className="text-xl font-bold text-slate-800">Acchiappa i Cuoricini dal Cielo 🧺</h3>
-        <p className="text-xs text-slate-500">
-          Muovi il cestino col mouse o col dito per catturare i vari tipi di cuori che piovono!
+        <h3 className="text-lg font-serif font-bold text-stone-900">Riflessi e Coordinate</h3>
+        <p className="text-xs text-stone-500">
+          Sposta il cursore per intercettare le particelle luminose in caduta.
         </p>
       </div>
 
@@ -262,9 +266,9 @@ function CatcherGame({ onAddPoints }) {
           <button
             onClick={startGame}
             id="start-catcher-btn"
-            className="px-6 py-3 rounded-2xl bg-gradient-to-r from-rose-500 to-pink-500 text-white font-bold shadow-lg hover:from-rose-600 hover:to-pink-600 transition"
+            className="px-6 py-2.5 rounded-xl bg-stone-900 text-white font-medium text-xs sm:text-sm hover:bg-stone-800 transition"
           >
-            Inizia la Pioggia di Cuori ✨
+            Avvia Sessione
           </button>
         </div>
       ) : (
@@ -272,134 +276,119 @@ function CatcherGame({ onAddPoints }) {
           ref={containerRef}
           onMouseMove={handleMouseMove}
           onTouchMove={handleMouseMove}
-          className="relative w-full max-w-lg h-72 bg-gradient-to-b from-rose-50/70 via-pink-100/50 to-rose-200/60 rounded-2xl border-2 border-rose-300 overflow-hidden cursor-crosshair select-none"
+          className="relative w-full max-w-lg h-72 bg-stone-100 rounded-xl border border-stone-300 overflow-hidden cursor-crosshair select-none"
         >
-          {/* Falling items */}
-          {fallingHearts.map((item) => (
+          {items.map((item) => (
             <div
               key={item.id}
-              className="absolute text-2xl drop-shadow transform -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-all duration-75"
+              className="absolute w-4 h-4 rounded-full bg-stone-800 shadow transform -translate-x-1/2 -translate-y-1/2 pointer-events-none"
               style={{
                 left: `${item.x}%`,
                 top: `${item.y}%`,
               }}
-            >
-              {item.heart.icon}
-            </div>
+            />
           ))}
 
-          {/* The Basket */}
           <div
-            className="absolute bottom-2 -translate-x-1/2 px-4 py-1.5 rounded-2xl bg-rose-600 text-white font-extrabold text-xs shadow-lg flex items-center gap-1 border-2 border-white pointer-events-none"
-            style={{ left: `${basketX}%` }}
-          >
-            <span>🧺</span>
-            <span>Ele's Basket</span>
-          </div>
+            className="absolute bottom-2 -translate-x-1/2 w-24 h-4 rounded-full bg-stone-900 shadow border border-white pointer-events-none"
+            style={{ left: `${paddleX}%` }}
+          />
         </div>
       )}
 
-      {/* Manual quick catch button for easy play */}
       <button
-        onClick={() => {
-          const heart = HEART_TYPES[Math.floor(Math.random() * HEART_TYPES.length)];
-          onAddPoints(heart.points);
-        }}
-        className="mt-4 px-4 py-1.5 rounded-xl bg-rose-100 text-rose-700 text-xs font-semibold hover:bg-rose-200 transition"
+        onClick={() => onAddPoints(20)}
+        className="mt-4 px-4 py-1.5 rounded-lg border border-stone-200 text-stone-600 text-xs hover:bg-stone-50 transition"
       >
-        + Cattura Cuore Rapido (+punti)
+        Intercetta Punto Rapido (+20 pt)
       </button>
     </div>
   );
 }
 
-// ---------------- GAME 2: Cuori Esplosivi (Popper) ----------------
+// ---------------- GAME 2: Sfere in Sospensione ----------------
 function PopperGame({ onAddPoints }) {
-  const [bubbles, setBubbles] = useState([]);
+  const [spheres, setSpheres] = useState([]);
 
   useEffect(() => {
-    // Generate bubbles
     const interval = setInterval(() => {
-      setBubbles((prev) => {
+      setSpheres((prev) => {
         if (prev.length >= 8) return prev;
-        const randomHeart = HEART_TYPES[Math.floor(Math.random() * HEART_TYPES.length)];
         return [
           ...prev,
           {
             id: Math.random().toString(),
-            heart: randomHeart,
+            points: 25,
             x: Math.floor(Math.random() * 80) + 10,
             y: Math.floor(Math.random() * 70) + 15,
-            size: Math.floor(Math.random() * 15) + 40,
+            size: Math.floor(Math.random() * 14) + 38,
           }
         ];
       });
-    }, 600);
+    }, 700);
 
     return () => clearInterval(interval);
   }, []);
 
-  const popBubble = (id, points) => {
+  const popSphere = (id, points) => {
     onAddPoints(points);
-    setBubbles((prev) => prev.filter((b) => b.id !== id));
+    setSpheres((prev) => prev.filter((s) => s.id !== id));
   };
 
   return (
     <div className="flex flex-col items-center">
       <div className="text-center mb-4">
-        <h3 className="text-xl font-bold text-slate-800">Scoppia i Cuoricini Fluttuanti 🫧</h3>
-        <p className="text-xs text-slate-500">
-          Clicca o tocca sui cuoricini per farli scoppiare e guadagnare un sacco di punti!
+        <h3 className="text-lg font-serif font-bold text-stone-900">Sfere in Sospensione</h3>
+        <p className="text-xs text-stone-500">
+          Seleziona le sfere fluttuanti per registrarne il valore.
         </p>
       </div>
 
-      <div className="relative w-full max-w-lg h-72 bg-gradient-to-tr from-amber-50 via-rose-50 to-pink-100 rounded-2xl border-2 border-rose-300 overflow-hidden select-none">
-        {bubbles.map((b) => (
+      <div className="relative w-full max-w-lg h-72 bg-stone-100 rounded-xl border border-stone-300 overflow-hidden select-none">
+        {spheres.map((s) => (
           <button
-            key={b.id}
+            key={s.id}
             data-testid="popper-heart-bubble"
-            onClick={() => popBubble(b.id, b.heart.points)}
+            onClick={() => popSphere(s.id, s.points)}
             style={{
-              left: `${b.x}%`,
-              top: `${b.y}%`,
-              width: `${b.size}px`,
-              height: `${b.size}px`,
+              left: `${s.x}%`,
+              top: `${s.y}%`,
+              width: `${s.size}px`,
+              height: `${s.size}px`,
             }}
-            className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/90 shadow-md border-2 border-rose-300 hover:scale-125 active:scale-90 flex items-center justify-center transition-transform animate-float cursor-pointer"
+            className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-md border border-stone-300 hover:scale-110 active:scale-95 flex items-center justify-center transition-transform cursor-pointer font-serif text-xs font-semibold text-stone-800"
           >
-            <span className="text-xl">{b.heart.icon}</span>
+            {s.points}
           </button>
         ))}
-        {bubbles.length === 0 && (
-          <div className="h-full flex items-center justify-center text-rose-400 text-xs font-semibold">
-            In arrivo nuovi cuoricini...
+        {spheres.length === 0 && (
+          <div className="h-full flex items-center justify-center text-stone-400 text-xs">
+            In attesa di nuove sfere...
           </div>
         )}
       </div>
 
-      <div className="flex gap-2 mt-4">
-        <button
-          onClick={() => onAddPoints(50)}
-          className="px-4 py-1.5 rounded-xl bg-rose-100 text-rose-700 text-xs font-semibold hover:bg-rose-200 transition"
-        >
-          Scoppio Multiplo (+50 pt)
-        </button>
-      </div>
+      <button
+        onClick={() => onAddPoints(50)}
+        className="mt-4 px-4 py-1.5 rounded-lg border border-stone-200 text-stone-600 text-xs hover:bg-stone-50 transition"
+      >
+        Acquisizione Multipla (+50 pt)
+      </button>
     </div>
   );
 }
 
-// ---------------- GAME 3: Memory d'Amore ----------------
+// ---------------- GAME 3: Memoria Visiva ----------------
 function MemoryGame({ onAddPoints }) {
   const cardsTemplate = [
-    { name: 'Oreo', icon: '🍪', id: 1 },
-    { name: 'Oreo', icon: '🍪', id: 2 },
-    { name: 'Cuore Oro', icon: '💛', id: 3 },
-    { name: 'Cuore Oro', icon: '💛', id: 4 },
-    { name: 'Cuore Rosa', icon: '💖', id: 5 },
-    { name: 'Cuore Rosa', icon: '💖', id: 6 },
-    { name: 'Arcobaleno', icon: '🌈', id: 7 },
-    { name: 'Arcobaleno', icon: '🌈', id: 8 },
+    { label: 'Oreo', id: 1 },
+    { label: 'Oreo', id: 2 },
+    { label: 'Tempo', id: 3 },
+    { label: 'Tempo', id: 4 },
+    { label: 'Calma', id: 5 },
+    { label: 'Calma', id: 6 },
+    { label: 'Parole', id: 7 },
+    { label: 'Parole', id: 8 },
   ];
 
   const [cards, setCards] = useState(() => [...cardsTemplate].sort(() => Math.random() - 0.5));
@@ -415,7 +404,7 @@ function MemoryGame({ onAddPoints }) {
     if (newFlipped.length === 2) {
       const first = cards[newFlipped[0]];
       const second = cards[newFlipped[1]];
-      if (first.name === second.name) {
+      if (first.label === second.label) {
         setMatched((prev) => [...prev, newFlipped[0], newFlipped[1]]);
         setFlipped([]);
         onAddPoints(80);
@@ -434,8 +423,8 @@ function MemoryGame({ onAddPoints }) {
   return (
     <div className="flex flex-col items-center">
       <div className="text-center mb-4">
-        <h3 className="text-xl font-bold text-slate-800">Memory delle Coppie dei Cuori 🃏</h3>
-        <p className="text-xs text-slate-500">Trova le coppie identiche di cuori e biscotti Oreo!</p>
+        <h3 className="text-lg font-serif font-bold text-stone-900">Memoria Visiva</h3>
+        <p className="text-xs text-stone-500">Abbina le coppie corrispondenti.</p>
       </div>
 
       <div className="grid grid-cols-4 gap-3 max-w-sm w-full">
@@ -446,13 +435,13 @@ function MemoryGame({ onAddPoints }) {
               key={idx}
               data-testid={`memory-card-${idx}`}
               onClick={() => handleCardClick(idx)}
-              className={`h-20 rounded-2xl font-bold text-2xl flex items-center justify-center border-2 transition-all duration-300 shadow-sm ${
+              className={`h-20 rounded-xl font-medium text-xs flex items-center justify-center border transition-all duration-200 ${
                 isFlipped
-                  ? 'bg-rose-50 border-rose-400 rotate-0'
-                  : 'bg-gradient-to-tr from-rose-500 to-pink-500 border-white text-white rotate-6'
+                  ? 'bg-stone-100 border-stone-400 text-stone-900 font-semibold'
+                  : 'bg-stone-900 border-stone-800 text-stone-400'
               }`}
             >
-              {isFlipped ? card.icon : '❓'}
+              {isFlipped ? card.label : '•'}
             </button>
           );
         })}
@@ -460,52 +449,50 @@ function MemoryGame({ onAddPoints }) {
 
       <button
         onClick={resetGame}
-        className="mt-4 inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl border border-slate-200 text-slate-600 text-xs font-semibold hover:bg-slate-50 transition"
+        className="mt-4 inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg border border-stone-200 text-stone-600 text-xs font-medium hover:bg-stone-50 transition"
       >
         <RotateCcw className="w-3.5 h-3.5" />
-        Nuova Partita
+        Nuova Sequenza
       </button>
     </div>
   );
 }
 
-// ---------------- GAME 4: Turbo Clicker ----------------
+// ---------------- GAME 4: Ritmo e Precisione ----------------
 function ClickerGame({ onAddPoints }) {
   const [multiplier, setMultiplier] = useState(1);
-  const [clickCount, setClickCount] = useState(0);
 
   const handleClick = () => {
-    const pts = 20 * multiplier;
+    const pts = 25 * multiplier;
     onAddPoints(pts);
-    setClickCount((c) => c + 1);
   };
 
   return (
     <div className="flex flex-col items-center text-center">
-      <h3 className="text-xl font-bold text-slate-800 mb-1">Generatore di Cuori Turbo 💖</h3>
-      <p className="text-xs text-slate-500 mb-6 max-w-sm">
-        Clicca a raffica sul maxi-cuore per accumulare tantissimi punti e scalare verso quota 2212!
+      <h3 className="text-lg font-serif font-bold text-stone-900 mb-1">Ritmo e Precisione</h3>
+      <p className="text-xs text-stone-500 mb-6 max-w-sm">
+        Premi sul quadrante per incrementare i punti verso i traguardi segreti.
       </p>
 
       <button
         id="maxi-heart-clicker"
         onClick={handleClick}
-        className="w-36 h-36 rounded-full bg-gradient-to-tr from-rose-500 via-pink-500 to-rose-400 shadow-xl border-4 border-white flex flex-col items-center justify-center text-white hover:scale-110 active:scale-95 transition transform group cursor-pointer"
+        className="w-32 h-32 rounded-full bg-stone-900 text-white shadow-lg border-4 border-stone-200 flex flex-col items-center justify-center hover:bg-stone-800 active:scale-95 transition cursor-pointer"
       >
-        <Heart className="w-16 h-16 fill-white group-hover:animate-ping" />
-        <span className="text-xs font-black tracking-widest uppercase mt-1">CLICK!</span>
+        <span className="text-sm font-serif font-bold tracking-widest uppercase">PUNTO</span>
+        <span className="text-[10px] text-stone-400 mt-0.5">+{25 * multiplier}</span>
       </button>
 
       <div className="flex items-center gap-2 mt-6">
-        <span className="text-xs text-slate-600">Moltiplicatore Cuore:</span>
+        <span className="text-xs text-stone-500">Fattore di moltiplicazione:</span>
         {[1, 2, 5, 10].map((m) => (
           <button
             key={m}
             onClick={() => setMultiplier(m)}
-            className={`px-3 py-1 rounded-xl text-xs font-bold transition ${
+            className={`px-3 py-1 rounded-lg text-xs font-medium transition ${
               multiplier === m
-                ? 'bg-rose-500 text-white'
-                : 'bg-rose-100 text-rose-700 hover:bg-rose-200'
+                ? 'bg-stone-900 text-white'
+                : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
             }`}
           >
             x{m}

@@ -1,139 +1,116 @@
 import React, { useState } from 'react';
-import { Heart, Sparkles, Smile, Star, Gift, Coffee, Moon, Sun, Wand2 } from 'lucide-react';
-import confetti from 'canvas-confetti';
+import { Feather, RefreshCw, Check } from 'lucide-react';
 
 export default function MomentsSection() {
-  const reasons = [
+  const thoughts = [
     {
-      title: "Il tuo sorriso quando sei felice",
-      desc: "Illumina letteralmente ogni stanza ed è la cosa più bella da vedere al mondo.",
-      emoji: "✨"
+      title: "Il tuo sorriso autentico",
+      desc: "Rende speciale qualsiasi ambiente ed è una delle cose più sincere e belle da vedere."
     },
     {
-      title: "I nostri momenti a mangiare insieme",
-      desc: "Come quando condividiamo qualcosa di buono e chiacchieriamo spensierati, i ricordi più preziosi.",
-      emoji: "🍕"
+      title: "I momenti semplici a tavola insieme",
+      desc: "Come quando ci fermiamo a mangiare qualcosa insieme con leggerezza, tra i ricordi più autentici."
     },
     {
-      title: "I tuoi messaggi dolci",
-      desc: "I bei messaggi di oggi e di sempre che mi scaldano il cuore e mi fanno sentire fortunato.",
-      emoji: "💌"
+      title: "I tuoi messaggi",
+      desc: "I bei messaggi ricevuti che custodisco con grande cura e che hanno un valore profondo."
     },
     {
-      title: "La persona meravigliosa che sei",
-      desc: "Sensibile, unica, speciale: sei la persona che adoro di più e che adorerò per sempre.",
-      emoji: "💖"
+      title: "La persona che sei",
+      desc: "Sensibile, intelligente e unica: la persona che adoro di più e che adorerò per sempre."
     },
     {
-      title: "La tua dolcezza infinita",
-      desc: "Anche nei momenti difficili, hai un cuore grande che merita solo il meglio e il massimo rispetto.",
-      emoji: "🌸"
+      title: "La delicatezza d'animo",
+      desc: "La tua capacità di comprendere e guardare le cose con sensibilità merita solo rispetto e cura."
     },
     {
-      title: "I nostri piccoli riti",
-      desc: "Dagli Oreo ai sorrisi improvvisi, ogni secondo trascorso con te ha un valore inestimabile.",
-      emoji: "🍪"
+      title: "I piccoli riferimenti condivisi",
+      desc: "Dai biscotti Oreo alle nostre conversazioni, ogni singolo giorno trascorso insieme ha un significato vero."
     }
   ];
 
-  const compliments = [
-    "Ele, hai gli occhi più espressivi e dolci del mondo! ✨",
-    "Stare con te fa sembrare qualsiasi giornata normale un momento indimenticabile! 💖",
-    "Sei incredibilmente bella quando ridi di gusto! 🌟",
-    "Ti amo davvero tantissimo, più di ogni parola che potrò mai scrivere. 💕",
-    "Sei la mia persona preferita nell'intero universo. 🪐",
-    "Non dimenticare mai quanto vali e quanto sei preziosa per me. 🌹"
+  const reflections = [
+    "Ele, hai uno sguardo limpido e profondo.",
+    "Il tempo trascorso insieme è sempre stato un momento di valore sincero.",
+    "Sei una persona meravigliosa e non smetterò mai di ribadirtelo.",
+    "Ti amo davvero e ti ringrazio per tutto ciò che hai scelto di condividere.",
+    "La tua presenza ha sempre fatto una differenza reale.",
+    "Custodisco il rispetto più profondo per quello che sei."
   ];
 
-  const [currentCompliment, setCurrentCompliment] = useState(compliments[0]);
-  const [redeemedCoupons, setRedeemedCoupons] = useState({});
+  const [currentReflection, setCurrentReflection] = useState(reflections[0]);
+  const [claimedItems, setClaimedItems] = useState({});
 
-  const getRandomCompliment = () => {
-    const next = compliments[Math.floor(Math.random() * compliments.length)];
-    setCurrentCompliment(next);
-    confetti({
-      particleCount: 40,
-      spread: 60,
-      origin: { y: 0.7 }
-    });
+  const getNextReflection = () => {
+    const next = reflections[Math.floor(Math.random() * reflections.length)];
+    setCurrentReflection(next);
   };
 
-  const coupons = [
-    { id: 'oreo', title: 'Cena o Merenda Offerta', desc: 'Con tanto di confezione gigante di Oreo o qualsiasi cosa tu desideri!' },
-    { id: 'hug', title: 'Abbraccio Stretto Illimitato', desc: 'Valido ovunque e per tutto il tempo che desideri.' },
-    { id: 'listen', title: 'Ascolto & Chiacchierata', desc: 'Ascolto totale senza giudizi, per parlare e risolvere con calma.' },
-    { id: 'massage', title: 'Coccole & Relax Senza Limiti', desc: 'Giornata di relax totale e zero stress garantito per la mia Ele.' },
+  const promises = [
+    { id: 'talk', title: 'Dialogo & Ascolto', desc: 'Tempo dedicato ad ascoltarti con calma, attenzione e totale trasparenza.' },
+    { id: 'meal', title: 'Pasto Insieme', desc: 'Un momento per mangiare qualcosa insieme in serenità, come ai bei tempi.' },
+    { id: 'patience', title: 'Pazienza & Maturità', desc: 'L\'impegno a non ripetere gli errori del passato e a dimostrare vera maturità.' },
+    { id: 'support', title: 'Presenza Costante', desc: 'Esserci sempre per qualsiasi cosa tu abbia bisogno, nel rispetto dei tuoi tempi.' }
   ];
 
-  const redeemCoupon = (id) => {
-    setRedeemedCoupons(prev => ({ ...prev, [id]: true }));
-    confetti({
-      particleCount: 60,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
+  const claimPromise = (id) => {
+    setClaimedItems(prev => ({ ...prev, [id]: true }));
   };
 
   return (
     <div className="space-y-10 py-4">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-rose-500 via-pink-500 to-rose-400 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
-        <div className="relative z-10 max-w-xl">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 text-xs font-bold mb-3 uppercase tracking-wider backdrop-blur-sm">
-            <Heart className="w-3.5 h-3.5 fill-white" />
-            <span>Dedicato ad Ele</span>
-          </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2">
-            Perché sei la persona che adoro di più 💕
+      <div className="bg-stone-900 rounded-2xl p-6 sm:p-8 text-white shadow-lg border border-stone-800">
+        <div className="max-w-xl">
+          <span className="text-xs font-semibold uppercase tracking-widest text-stone-400">
+            Dedicato ad Ele
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-serif tracking-tight mt-1 mb-2 text-stone-100">
+            Ciò che custodisco con rispetto
           </h2>
-          <p className="text-rose-100 text-sm sm:text-base leading-relaxed">
-            Anche quando sbaglio o sono ingenuo, il mio sentimento per te non è mai cambiato. Qui ci sono solo alcuni dei mille motivi per cui sei così speciale.
+          <p className="text-stone-300 text-sm sm:text-base leading-relaxed">
+            Anche quando ho agito con ingenuità o immaturità, ciò che provo e la considerazione che ho di te non sono mai cambiate. Qui ci sono riflessioni sincere su di noi.
           </p>
-        </div>
-        <div className="absolute -right-4 -bottom-6 text-9xl opacity-20 pointer-events-none">
-          🌸
         </div>
       </div>
 
-      {/* Generator of compliments */}
-      <div className="bg-white/80 backdrop-blur-md rounded-3xl p-6 sm:p-8 border border-rose-200 shadow-md text-center max-w-2xl mx-auto">
-        <div className="w-12 h-12 mx-auto rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mb-4">
-          <Wand2 className="w-6 h-6 animate-pulse" />
+      {/* Thought Generator */}
+      <div className="bg-white rounded-2xl p-6 sm:p-8 border border-stone-200 shadow-sm text-center max-w-2xl mx-auto">
+        <div className="w-10 h-10 mx-auto rounded-xl bg-stone-100 text-stone-800 flex items-center justify-center mb-4">
+          <Feather className="w-5 h-5 text-stone-700" />
         </div>
-        <h3 className="text-xl font-bold text-slate-800 mb-2">Generatore di Dolcezze per Ele</h3>
-        <p className="text-slate-600 text-sm mb-6">Clicca per ricevere un pensiero speciale pensato solo per te:</p>
+        <h3 className="text-lg font-semibold text-stone-900 mb-1">Un pensiero per Ele</h3>
+        <p className="text-stone-500 text-xs sm:text-sm mb-6">Un promemoria sulla persona meravigliosa che sei:</p>
 
-        <div className="p-4 bg-rose-50/70 rounded-2xl border border-rose-200 text-rose-800 font-medium text-base sm:text-lg min-h-[70px] flex items-center justify-center italic">
-          "{currentCompliment}"
+        <div className="p-4 bg-stone-50 rounded-xl border border-stone-200 text-stone-800 font-serif text-base sm:text-lg min-h-[64px] flex items-center justify-center">
+          "{currentReflection}"
         </div>
 
         <button
-          onClick={getRandomCompliment}
+          onClick={getNextReflection}
           type="button"
-          className="mt-5 inline-flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-gradient-to-r from-rose-500 to-pink-500 text-white font-semibold text-sm shadow-md hover:from-rose-600 hover:to-pink-600 transition"
+          className="mt-5 inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-stone-900 text-white font-medium text-xs sm:text-sm hover:bg-stone-800 transition"
         >
-          <Sparkles className="w-4 h-4" />
-          <span>Genera un Altro Pensiero Dolce</span>
+          <RefreshCw className="w-3.5 h-3.5" />
+          <span>Nuovo Pensiero</span>
         </button>
       </div>
 
-      {/* Grid of Reasons */}
+      {/* Grid of Thoughts */}
       <div>
-        <h3 className="text-xl font-extrabold text-slate-800 mb-4 flex items-center gap-2">
-          <span>Piccole Grandi Cose Che Amo Di Te</span>
-          <Heart className="w-5 h-5 text-rose-500 fill-rose-500" />
+        <h3 className="text-lg font-bold text-stone-900 mb-4 font-serif">
+          Aspetti che adoro di te
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {reasons.map((item, idx) => (
+          {thoughts.map((item, idx) => (
             <div
               key={idx}
-              className="bg-white/90 backdrop-blur-sm rounded-2xl p-5 border border-rose-100 shadow-sm hover:shadow-md hover:border-rose-300 transition group"
+              className="bg-white rounded-xl p-5 border border-stone-200 shadow-xs hover:border-stone-400 transition"
             >
-              <div className="text-3xl mb-3">{item.emoji}</div>
-              <h4 className="font-bold text-slate-800 mb-1 text-base group-hover:text-rose-600 transition">
+              <h4 className="font-semibold text-stone-900 mb-1.5 text-sm sm:text-base">
                 {item.title}
               </h4>
-              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+              <p className="text-stone-600 text-xs sm:text-sm leading-relaxed font-sans">
                 {item.desc}
               </p>
             </div>
@@ -141,57 +118,45 @@ export default function MomentsSection() {
         </div>
       </div>
 
-      {/* Love Coupons Section */}
+      {/* Commitments Section */}
       <div>
-        <h3 className="text-xl font-extrabold text-slate-800 mb-2 flex items-center gap-2">
-          <span>Buoni d'Amore per Ele (Sempre Validi!)</span>
-          <Gift className="w-5 h-5 text-rose-500" />
+        <h3 className="text-lg font-bold text-stone-900 mb-1 font-serif">
+          Impegni e Promesse
         </h3>
-        <p className="text-slate-600 text-sm mb-4">
-          Puoi riscattarli quando vuoi, non hanno scadenza:
+        <p className="text-stone-500 text-xs sm:text-sm mb-4">
+          Gesti concreti a tua disposizione quando vorrai:
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {coupons.map((c) => {
-            const isClaimed = redeemedCoupons[c.id];
+          {promises.map((p) => {
+            const isClaimed = claimedItems[p.id];
             return (
               <div
-                key={c.id}
-                className={`p-5 rounded-2xl border-2 transition relative flex flex-col justify-between ${
-                  isClaimed
-                    ? 'bg-rose-50/50 border-rose-300 opacity-90'
-                    : 'bg-white border-dashed border-rose-300 shadow-sm'
-                }`}
+                key={p.id}
+                className="p-5 rounded-xl border border-stone-200 bg-white shadow-xs flex flex-col justify-between"
               >
                 <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-bold text-slate-800 text-base">{c.title}</h4>
-                    <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700">
-                      100% Amore
-                    </span>
-                  </div>
-                  <p className="text-slate-600 text-xs sm:text-sm mb-4 leading-relaxed">{c.desc}</p>
+                  <h4 className="font-semibold text-stone-900 text-sm sm:text-base mb-1">{p.title}</h4>
+                  <p className="text-stone-600 text-xs sm:text-sm mb-4 leading-relaxed">{p.desc}</p>
                 </div>
 
                 <button
-                  onClick={() => redeemCoupon(c.id)}
+                  onClick={() => claimPromise(p.id)}
                   disabled={isClaimed}
                   type="button"
-                  className={`w-full py-2 px-4 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 ${
+                  className={`w-full py-2 px-3 rounded-lg text-xs font-medium transition flex items-center justify-center gap-1.5 ${
                     isClaimed
-                      ? 'bg-emerald-100 text-emerald-700 cursor-default'
-                      : 'bg-rose-500 text-white hover:bg-rose-600 shadow'
+                      ? 'bg-stone-100 text-stone-500 cursor-default'
+                      : 'bg-stone-900 text-white hover:bg-stone-800'
                   }`}
                 >
                   {isClaimed ? (
                     <>
-                      <span>✓ Riscattato con Successo!</span>
+                      <Check className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Confermato</span>
                     </>
                   ) : (
-                    <>
-                      <Sparkles className="w-3.5 h-3.5" />
-                      <span>Riscatta Questo Buono</span>
-                    </>
+                    <span>Seleziona questo impegno</span>
                   )}
                 </button>
               </div>
